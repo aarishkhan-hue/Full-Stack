@@ -42,7 +42,10 @@ jobs:
 
       - name: Checkout code
         uses: actions/checkout@v4
-
+      - name: Print Active Account
+        run: |
+          gcloud auth list
+          gcloud config list
       - name: Google Auth
         id: auth
         uses: google-github-actions/auth@v2
@@ -58,6 +61,7 @@ jobs:
 
       - name: Build and Push Backend
         run: |
+        #asia-southeast1-docker.pkg.dev/project-dd428875-fba1-452d-85f/frontend/product-backend
           docker build -t asia-southeast1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/frontend/product-backend:latest ./backend
           docker push asia-southeast1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/frontend/product-backend:latest
 
