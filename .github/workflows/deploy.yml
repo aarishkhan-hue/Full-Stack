@@ -12,31 +12,38 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # 1️⃣ Authenticate to Google Cloud
       - name: Google Auth
-        id: auth
         uses: google-github-actions/auth@v2
         with:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
 
+      # 2️⃣ Install gcloud CLI
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
 
+      # 3️⃣ Set active project
       - name: Set Project
         run: gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
 
-      - name: Configure Docker
-        run: gcloud auth configure-docker asia-southeast1-docker.pkg.dev --quiet
+      # 4️⃣ Configure Docker to use gcloud credentials
+      - name: Configure Docker for Artifact Registry
+        run: |
+          gcloud auth configure-docker asia-southeast1-docker.pkg.dev --quiet
 
+      # 5️⃣ Build & Push Backend
       - name: Build and Push Backend
         run: |
           docker build -t asia-southeast1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/frontend/product-backend:latest ./backend
           docker push asia-southeast1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/frontend/product-backend:latest
 
+      # 6️⃣ Build & Push Frontend
       - name: Build and Push Frontend
         run: |
           docker build -t asia-southeast1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/frontend/product-frontend:latest ./frontend
           docker push asia-southeast1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/frontend/product-frontend:latest
 
+      # 7️⃣ Deploy to VM
       - name: Deploy to VM via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
