@@ -10,10 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-      - name: Print Active Account
-        run: |
-          gcloud auth lista
-          gcloud config list
+     
       - name: Check if GCP_SA_KEY secret exists
         run: |
           missing=0
@@ -56,8 +53,15 @@ jobs:
 
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
+
+      
       - name: Set Project
         run: gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
+      - name: Print Active Account
+        run: |
+          gcloud auth lista
+          gcloud config list
+
       - name: Configure Docker
         run: gcloud auth configure-docker asia-southeast1-docker.pkg.dev --quiet
 
