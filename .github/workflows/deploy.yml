@@ -10,6 +10,10 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
+      - name: Print Active Account
+        run: |
+          gcloud auth lista
+          gcloud config list
       - name: Check if GCP_SA_KEY secret exists
         run: |
           missing=0
@@ -42,10 +46,7 @@ jobs:
 
       - name: Checkout code
         uses: actions/checkout@v4
-      - name: Print Active Account
-        run: |
-          gcloud auth lista
-          gcloud config list
+      
 
       - name: Google Auth
         id: auth
