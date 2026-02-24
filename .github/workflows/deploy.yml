@@ -1,4 +1,3 @@
-# Deploy Nexus Inventory - Migration to frontend
 name: Deploy Nexus Inventory
 
 on:
@@ -10,40 +9,8 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-     
-      - name: Check if GCP_SA_KEY secret exists
-        run: |
-          missing=0
-
-          if [ -z "${{ secrets.GCP_SA_KEY }}" ]; then
-            echo "❌ GCP_SA_KEY missing"
-            missing=1
-          else
-            echo "✅ GCP_SA_KEY loaded"
-          fi
-
-          if [ -z "${{ secrets.GCP_PROJECT_ID }}" ]; then
-            echo "❌ GCP_PROJECT_ID missing"
-            missing=1
-          else
-            echo "✅ GCP_PROJECT_ID loaded"
-          fi
-
-          if [ -z "${{ secrets.VM_IP }}" ]; then
-            echo "❌ VM_IP missing"
-            missing=1
-          else
-            echo "✅ VM_IP loaded"
-          fi
-
-          if [ $missing -eq 1 ]; then
-            echo "Some secrets are missing"
-            exit 1
-          fi
-
       - name: Checkout code
         uses: actions/checkout@v4
-      
 
       - name: Google Auth
         id: auth
@@ -54,12 +21,12 @@ jobs:
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
 
-      
       - name: Set Project
         run: gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
+
       - name: Print Active Account
         run: |
-          gcloud auth lista
+          gcloud auth list
           gcloud config list
 
       - name: Configure Docker
@@ -67,7 +34,6 @@ jobs:
 
       - name: Build and Push Backend
         run: |
-        #asia-southeast1-docker.pkg.dev/project-dd428875-fba1-452d-85f/frontend/product-backend
           docker build -t asia-southeast1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/frontend/product-backend:latest ./backend
           docker push asia-southeast1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/frontend/product-backend:latest
 
@@ -83,17 +49,12 @@ jobs:
           username: aarish_khan
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            # Pull latest images
             docker pull asia-southeast1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/frontend/product-backend:latest
             docker pull asia-southeast1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/frontend/product-frontend:latest
             
-            # Create network if not exists
             docker network create product-network || true
-            
-            # Stop and remove existing containers
             docker rm -f product-backend-prod product-frontend-prod || true
             
-            # Start Backend
             docker run -d --name product-backend-prod \
               --network product-network \
               -p 8081:8081 \
@@ -102,7 +63,6 @@ jobs:
               -e SPRING_DATASOURCE_PASSWORD=product_pass \
               asia-southeast1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/frontend/product-backend:latest
             
-            # Start Frontend
             docker run -d --name product-frontend-prod \
               --network product-network \
               -p 80:80 \
