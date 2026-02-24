@@ -24,23 +24,18 @@ jobs:
       - name: Set Project
         run: gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
 
-      - name: Print Active Account
-        run: |
-          gcloud auth list
-          gcloud config list
-
       - name: Configure Docker
         run: gcloud auth configure-docker asia-southeast1-docker.pkg.dev --quiet
 
       - name: Build and Push Backend
         run: |
-          docker build -t asia-southeast1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/frontend/product-backend:latest ./backend
-          docker push asia-southeast1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/frontend/product-backend:latest
+          docker build -t asia-southeast1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/product-repo/product-backend:latest ./backend
+          docker push asia-southeast1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/product-repo/product-backend:latest
 
       - name: Build and Push Frontend
         run: |
-          docker build -t asia-southeast1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/frontend/product-frontend:latest ./frontend
-          docker push asia-southeast1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/frontend/product-frontend:latest
+          docker build -t asia-southeast1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/product-repo/product-frontend:latest ./frontend
+          docker push asia-southeast1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/product-repo/product-frontend:latest
 
       - name: Deploy to VM via SSH
         uses: appleboy/ssh-action@v1.0.3
@@ -49,8 +44,8 @@ jobs:
           username: aarish_khan
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            docker pull asia-southeast1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/frontend/product-backend:latest
-            docker pull asia-southeast1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/frontend/product-frontend:latest
+            docker pull asia-southeast1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/product-repo/product-backend:latest
+            docker pull asia-southeast1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/product-repo/product-frontend:latest
             
             docker network create product-network || true
             docker rm -f product-backend-prod product-frontend-prod || true
@@ -61,9 +56,9 @@ jobs:
               -e SPRING_DATASOURCE_URL=jdbc:postgresql://product-db-prod:5432/productdb \
               -e SPRING_DATASOURCE_USERNAME=product_user \
               -e SPRING_DATASOURCE_PASSWORD=product_pass \
-              asia-southeast1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/frontend/product-backend:latest
+              asia-southeast1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/product-repo/product-backend:latest
             
             docker run -d --name product-frontend-prod \
               --network product-network \
               -p 80:80 \
-              asia-southeast1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/frontend/product-frontend:latest
+              asia-southeast1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/product-repo/product-frontend:latest
