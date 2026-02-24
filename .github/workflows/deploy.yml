@@ -12,11 +12,32 @@ jobs:
     steps:
       - name: Check if GCP_SA_KEY secret exists
         run: |
+          missing=0
+
           if [ -z "${{ secrets.GCP_SA_KEY }}" ]; then
-            echo "Secret NOT found"
-            exit 1
+            echo "❌ GCP_SA_KEY missing"
+            missing=1
           else
-            echo "Secret loaded successfully"
+            echo "✅ GCP_SA_KEY loaded"
+          fi
+
+          if [ -z "${{ secrets.GCP_PROJECT_ID }}" ]; then
+            echo "❌ GCP_PROJECT_ID missing"
+            missing=1
+          else
+            echo "✅ GCP_PROJECT_ID loaded"
+          fi
+
+          if [ -z "${{ secrets.VM_IP }}" ]; then
+            echo "❌ VM_IP missing"
+            missing=1
+          else
+            echo "✅ VM_IP loaded"
+          fi
+
+          if [ $missing -eq 1 ]; then
+            echo "Some secrets are missing"
+            exit 1
           fi
 
       - name: Checkout code
