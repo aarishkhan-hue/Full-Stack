@@ -1,0 +1,33 @@
+# Node
+node_modules/
+dist/
+dist-ssr/
+*.local
+
+# Java / Maven
+target/
+*.class
+*.jar
+*.war
+*.ear
+.mvn/wrapper/maven-wrapper.jar
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*.DS_Store
+
+# Docker
+*.tar
+*.log
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# OS
+Thumbs.db
+Desktop.ini

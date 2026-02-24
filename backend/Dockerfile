@@ -1,0 +1,15 @@
+# Build stage
+FROM maven:3.9-eclipse-temurin-21-alpine AS build
+WORKDIR /app
+COPY pom.xml .
+COPY src ./src
+# Build the JAR, skipping tests for faster deployment
+RUN mvn clean package -DskipTests
+
+# Run stage
+FROM eclipse-temurin:21-jre-alpine
+WORKDIR /app
+COPY --from=build /app/target/*.jar app.jar
+EXPOSE 8081
+# Run with experimental VM options for lower memory environments on a standard VM
+ENTRYPOINT ["java", "-Xmx512m", "-Xms256m", "-jar", "app.jar"]
