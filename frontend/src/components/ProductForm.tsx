@@ -37,48 +37,51 @@ const ProductForm: React.FC<ProductFormProps> = ({ product, onSubmit, onClose })
     };
 
     return (
-        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in-up" style={{ animationDuration: '0.3s' }}>
-            <div className="glass-panel w-full max-w-lg rounded-3xl overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.5)] border border-white/10 relative">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl -z-10 translate-x-1/2 -translate-y-1/2"></div>
+        <div className="fixed inset-0 bg-background/80 backdrop-blur-md flex items-center justify-center p-4 z-50 animate-fade-in-up" style={{ animationDuration: '0.3s' }}>
+            <div className="glass-card w-full max-w-lg rounded-[2.5rem] overflow-hidden shadow-2xl border border-white/10 relative">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-3xl -z-10 translate-x-1/2 -translate-y-1/2"></div>
 
-                <div className="p-8 border-b border-white/5 flex justify-between items-center bg-slate-900/50 backdrop-blur-md">
-                    <h2 className="text-2xl font-bold text-white flex items-center gap-2">
-                        <Sparkles className="text-indigo-400" size={24} />
-                        {product ? 'Edit Product' : 'New Product'}
-                    </h2>
-                    <button onClick={onClose} className="p-2 text-slate-400 hover:text-white hover:bg-white/10 rounded-full transition-all">
-                        <X size={20} />
+                <div className="p-10 border-b border-white/5 flex justify-between items-center bg-white/[0.02] backdrop-blur-3xl">
+                    <div>
+                        <h2 className="text-3xl font-black text-white flex items-center gap-3 tracking-tighter">
+                            <Sparkles className="text-primary" size={28} />
+                            {product ? 'EDIT' : 'NEW'} <span className="text-primary">NODE</span>
+                        </h2>
+                        <p className="text-[10px] uppercase tracking-[0.3em] font-bold text-slate-500 mt-1">Inventory Orchestration</p>
+                    </div>
+                    <button onClick={onClose} className="p-3 text-slate-400 hover:text-white hover:bg-white/10 rounded-2xl transition-all">
+                        <X size={24} />
                     </button>
                 </div>
 
-                <form onSubmit={handleSubmit} className="p-8 space-y-6 relative z-10">
-                    <div>
-                        <label className="block text-sm font-semibold text-indigo-200/70 uppercase tracking-wider mb-2">Name</label>
+                <form onSubmit={handleSubmit} className="p-10 space-y-8 relative z-10">
+                    <div className="space-y-3">
+                        <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Identification</label>
                         <input
                             type="text"
                             name="name"
                             required
                             value={formData.name}
                             onChange={handleChange}
-                            className="w-full bg-slate-950/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all shadow-inner"
-                            placeholder="e.g. Wireless Headphones"
+                            className="w-full bg-background/50 border border-white/5 rounded-2xl px-5 py-4 text-white focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all font-medium placeholder:text-slate-700"
+                            placeholder="Product Title..."
                         />
                     </div>
-                    <div>
-                        <label className="block text-sm font-semibold text-indigo-200/70 uppercase tracking-wider mb-2">Description</label>
+                    <div className="space-y-3">
+                        <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Specifications</label>
                         <textarea
                             name="description"
                             rows={3}
                             required
                             value={formData.description}
                             onChange={handleChange}
-                            className="w-full bg-slate-950/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all shadow-inner resize-none"
-                            placeholder="Describe the product..."
+                            className="w-full bg-background/50 border border-white/5 rounded-2xl px-5 py-4 text-white focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all font-medium resize-none placeholder:text-slate-700"
+                            placeholder="System description..."
                         />
                     </div>
-                    <div className="grid grid-cols-2 gap-6">
-                        <div>
-                            <label className="block text-sm font-semibold text-indigo-200/70 uppercase tracking-wider mb-2">Price ($)</label>
+                    <div className="grid grid-cols-2 gap-8">
+                        <div className="space-y-3">
+                            <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Market Value ($)</label>
                             <input
                                 type="number"
                                 name="price"
@@ -87,11 +90,11 @@ const ProductForm: React.FC<ProductFormProps> = ({ product, onSubmit, onClose })
                                 step="0.01"
                                 value={formData.price}
                                 onChange={handleChange}
-                                className="w-full bg-slate-950/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all shadow-inner"
+                                className="w-full bg-background/50 border border-white/5 rounded-2xl px-5 py-4 text-white focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all font-bold"
                             />
                         </div>
-                        <div>
-                            <label className="block text-sm font-semibold text-indigo-200/70 uppercase tracking-wider mb-2">Stock</label>
+                        <div className="space-y-3">
+                            <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Node Count</label>
                             <input
                                 type="number"
                                 name="stockQuantity"
@@ -99,35 +102,35 @@ const ProductForm: React.FC<ProductFormProps> = ({ product, onSubmit, onClose })
                                 min="0"
                                 value={formData.stockQuantity}
                                 onChange={handleChange}
-                                className="w-full bg-slate-950/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all shadow-inner"
+                                className="w-full bg-background/50 border border-white/5 rounded-2xl px-5 py-4 text-white focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all font-bold"
                             />
                         </div>
                     </div>
-                    <div>
-                        <label className="block text-sm font-semibold text-indigo-200/70 uppercase tracking-wider mb-2">Category</label>
+                    <div className="space-y-3">
+                        <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Classification</label>
                         <input
                             type="text"
                             name="category"
                             required
                             value={formData.category}
                             onChange={handleChange}
-                            className="w-full bg-slate-950/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all shadow-inner"
-                            placeholder="e.g. Electronics"
+                            className="w-full bg-background/50 border border-white/5 rounded-2xl px-5 py-4 text-white focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all font-medium placeholder:text-slate-700"
+                            placeholder="Category segment..."
                         />
                     </div>
-                    <div className="pt-6 flex gap-4">
+                    <div className="pt-8 flex gap-5">
                         <button
                             type="button"
                             onClick={onClose}
-                            className="flex-1 px-6 py-3 bg-slate-800 hover:bg-slate-700 text-white rounded-xl transition-all font-medium border border-white/5"
+                            className="flex-1 px-8 py-4 bg-white/5 hover:bg-white/10 text-white rounded-2xl transition-all font-bold border border-white/5"
                         >
-                            Cancel
+                            ABORT
                         </button>
                         <button
                             type="submit"
-                            className="flex-1 px-6 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-400 hover:to-purple-500 text-white rounded-xl transition-all font-medium shadow-[0_0_20px_rgba(99,102,241,0.4)] hover:shadow-[0_0_25px_rgba(99,102,241,0.6)] active:scale-[0.98]"
+                            className="flex-2 px-10 py-4 bg-primary text-white rounded-2xl transition-all font-black shadow-lg shadow-primary/25 hover:scale-[1.02] active:scale-[0.98] tracking-widest uppercase text-sm"
                         >
-                            {product ? 'Save Changes' : 'Create Product'}
+                            {product ? 'SYCN HIERARCHY' : 'INITIALIZE NODE'}
                         </button>
                     </div>
                 </form>
@@ -135,5 +138,6 @@ const ProductForm: React.FC<ProductFormProps> = ({ product, onSubmit, onClose })
         </div>
     );
 };
+
 
 export default ProductForm;
