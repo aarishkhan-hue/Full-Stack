@@ -44,8 +44,9 @@ jobs:
         uses: actions/checkout@v4
       - name: Print Active Account
         run: |
-          gcloud auth list
+          gcloud auth lista
           gcloud config list
+
       - name: Google Auth
         id: auth
         uses: google-github-actions/auth@v2
