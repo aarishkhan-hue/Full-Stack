@@ -43,7 +43,7 @@ jobs:
           docker build -t asia-southeast1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/frontend/product-frontend:latest ./frontend
           docker push asia-southeast1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/frontend/product-frontend:latest
 
-      # 7️⃣ Deploy to VM
+      # 7️⃣ Deploy to VM via SSH
       - name: Deploy to VM via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -51,9 +51,11 @@ jobs:
           username: aarish_khan
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
+            # Pull latest images from the correct 'frontend' repository
             docker pull asia-southeast1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/frontend/product-backend:latest
             docker pull asia-southeast1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/frontend/product-frontend:latest
             
+            # Restart containers on the product-network
             docker network create product-network || true
             docker rm -f product-backend-prod product-frontend-prod || true
             
