@@ -1,0 +1,67 @@
+name: Deploy Nexus Inventory
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Google Auth
+      id: auth
+      uses: google-github-actions/auth@v2
+      with:
+        credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+    - name: Set up Cloud SDK
+      uses: google-github-actions/setup-gcloud@v2
+
+    - name: Configure Docker
+      run: gcloud auth configure-docker asia-southeast1-docker.pkg.dev --quiet
+
+    - name: Build and Push Backend
+      run: |
+        docker build -t asia-southeast1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/frontend/product-backend:latest ./backend
+        docker push asia-southeast1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/frontend/product-backend:latest
+
+    - name: Build and Push Frontend
+      run: |
+        docker build -t asia-southeast1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/frontend/product-frontend:latest ./frontend
+        docker push asia-southeast1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/frontend/product-frontend:latest
+
+    - name: Deploy to VM via SSH
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.VM_IP }}
+        username: aarish_khan
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
+          # 1. Pull the latest images
+          docker pull asia-southeast1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/frontend/product-backend:latest
+          docker pull asia-southeast1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/frontend/product-frontend:latest
+          
+          # 2. Create network if not exists
+          docker network create product-network || true
+          
+          # 3. Stop and remove existing containers
+          docker rm -f product-backend-prod product-frontend-prod || true
+          
+          # 4. Start Backend
+          docker run -d --name product-backend-prod \
+            --network product-network \
+            -p 8081:8081 \
+            -e SPRING_DATASOURCE_URL=jdbc:postgresql://product-db-prod:5432/productdb \
+            -e SPRING_DATASOURCE_USERNAME=product_user \
+            -e SPRING_DATASOURCE_PASSWORD=product_pass \
+            asia-southeast1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/frontend/product-backend:latest
+            
+          # 5. Start Frontend
+          docker run -d --name product-frontend-prod \
+            --network product-network \
+            -p 80:80 \
+            asia-southeast1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/frontend/product-frontend:latest
